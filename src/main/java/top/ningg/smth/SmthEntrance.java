@@ -15,6 +15,8 @@ public class SmthEntrance {
 
         // 初始化用户
         User user = new User();
+        user.setLogin("yishantech");
+        user.setPasswd(user.getLogin());
 
         // 登陆
         smthUserService.login(user);
