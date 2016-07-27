@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -92,9 +94,9 @@ public class SmthUserServiceImpl implements ISmthUserService {
             LoginResponse loginResponse = JSON.parseObject(responseText).toJavaObject(LoginResponse.class);
             // 判断是否登陆成功
             if (null != loginResponse && loginResponse.getId().equals(user.getLogin()) && loginResponse.is_online()) {
-                System.out.println(String.format("[SMTH]: 用户登陆成功, 用户名:%s", user.getLogin()));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 用户登陆成功, 用户名:%s", user.getLogin()));
             } else {
-                System.out.println(String.format("[SMTH]: 用户登陆失败, 用户名:%s, 完整错误信息: %s", user.getLogin(), responseText));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 用户登陆失败, 用户名:%s, 完整错误信息: %s", user.getLogin(), responseText));
             }
 
             // 获取并更新 cookie 信息.
@@ -130,16 +132,16 @@ public class SmthUserServiceImpl implements ISmthUserService {
             entity = response.getEntity();
             String responseText = IOUtils.toString(entity.getContent(), RESPONSE_CHAR_SET);
             if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode()) {
-                System.out.println(String.format("[SMTH]: 退出登陆失败, 用户名:%s, 返回信息:%s", user.getLogin(), responseText));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 退出登陆失败, 用户名:%s, 返回信息:%s", user.getLogin(), responseText));
             }
 
             // 获取响应信息
             LoginResponse loginResponse = JSON.parseObject(responseText).toJavaObject(LoginResponse.class);
             // 判断是否登陆成功
             if (null != loginResponse && loginResponse.isOperateSuccess()) {
-                System.out.println(String.format("[SMTH]: 退出登陆成功, 用户名:%s", user.getLogin()));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 退出登陆成功, 用户名:%s", user.getLogin()));
             } else {
-                System.out.println(String.format("[SMTH]: 退出登陆失败, 用户名:%s, 完整错误信息: %s", user.getLogin(), responseText));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 退出登陆失败, 用户名:%s, 完整错误信息: %s", user.getLogin(), responseText));
             }
 
         } catch (IOException e) {
@@ -174,19 +176,23 @@ public class SmthUserServiceImpl implements ISmthUserService {
             String responseText = IOUtils.toString(entity.getContent(), RESPONSE_CHAR_SET);
             if (HttpStatus.SC_OK != response.getStatusLine().getStatusCode() || null == responseText || responseText.contains(MAIL_INBOX_ERROR_RESULT)) {
                 // fixme: 切换为 log4j
-                System.out.println(String.format("[SMTH]: 读取用户收件箱失败, 用户名:%s, 返回信息:%s", user.getLogin(), responseText));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 读取用户收件箱失败, 用户名:%s, 返回信息:%s", user.getLogin(), responseText));
                 return false;
             } else {
-                System.out.println(String.format("[SMTH]: 读取用户收件箱成功, 用户名:%s", user.getLogin()));
+                System.out.println(getCurrentTime() + String.format("[SMTH]: 读取用户收件箱成功, 用户名:%s", user.getLogin()));
                 return true;
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(String.format("[SMTH]: 读取用户收件箱失败, 用户名:%s。", user.getLogin()), e);
+            throw new RuntimeException(getCurrentTime() + String.format("[SMTH]: 读取用户收件箱失败, 用户名:%s。", user.getLogin()), e);
         } finally {
             EntityUtils.consumeQuietly(entity);
         }
 
+    }
+
+    private String getCurrentTime() {
+        return "[" + DateFormat.getInstance().format(new Date()) + "]";
     }
 
 }

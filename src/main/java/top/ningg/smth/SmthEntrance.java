@@ -21,7 +21,7 @@ public class SmthEntrance {
         // 登陆
         smthUserService.login(user);
         // sleep
-        int minute = randomInteger(50);
+        int minute = 45 + randomInteger(14);
         Thread.sleep(minute * MINUTE_UNIT);
 
         // 读取收件箱
